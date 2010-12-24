@@ -6,10 +6,54 @@ It assumes you have Puppet stored configuration running.
 
 Visiting the URL, for example localhost:8144, should return 
 a list of all stored configuration nodes and populate the appropriate 
-facts.
+facts for use with RunDeck.
 
-It's not working as yet but when it does you should just install 
-the gem and fire up puppet-rundeck 
+== Prerequisites
+
+Requires:
+
+ - Puppet (with Stored Configuration enabled)
+ - Builder (2.0.0 and later)
+
+== Installation
+
+Install the gem:
+
+  $ sudo gem install puppet-rundeck
+
+== Usage
+
+Run the `puppet-rundeck` binary.  We've assumed you're running `puppet-rundeck` on the Puppet master host.
+
+  $ puppet-rundeck
+
+Then browse to appropriate URL, by default `localhost:8144`
+
+  $ curl localhost:8144
+
+A list of the current stored hosts and appropriate facts to configure them on RunDeck will be returned in XML.
+
+For example:
+ 
+      <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd">
+      <project>
+        <h name="pelin.lovedthanlost.net"
+        type="Node"
+        description="pelin.lovedthanlost.net"
+        osArch="Linux"
+        osFamily="Linux"
+        osName="Fedora"
+        osVersion="14"
+        tags="nil"
+        username="root"
+        hostname="pelin.lovedthanlost.net"
+      </project>
+
+You can specify some configuration options:
+
+  * -c or --config to override the default Puppet configuration file (defaults to `/etc/puppet/puppet.conf`)
+  * -u or --username the user for RunDeck to SSH as, defaults to current user
+  * -p or --port the port to start `puppet-rundeck` on, default to 8144
 
 == Credits
 

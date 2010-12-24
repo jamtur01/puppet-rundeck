@@ -18,43 +18,51 @@
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
 
 require 'rubygems'
+require 'optparse'
 require 'puppet-rundeck'
-require 'mixlib/cli'
 
-class PuppetRundeckCLI
-  include Mixlib::CLI
+options = {}
+
+optparse = OptionParser.new do |opts|
+  # Set a banner, displayed at the top
+  # of the help screen.
+  opts.banner = 'Usage: puppet-rundeck [options] ...'
+
+  opts.separator ''
+  opts.separator 'Configuration options:'
  
-   option :config_file,
-      :short => "-c CONFIG",
-      :long  => "--config CONFIG",
-      :default => 'config.rb',
-      :description => "The Puppet configuration file to use"
+  options[:config_file] = "/etc/puppet/puppet.conf" 
+  opts.on( '-c', '--config FILE', 'Specify the location of your Puppet configuration file') do |config_file|
+    options[:config_file] = config_file
+  end 
 
-   option :username,
-     :short => "-u USERNAME",
-     :long => "--username USERNAME",
-     :default => ENV['USER'],
-     :description => "The Username for Rundeck to SSH as"
+  options[:username] = ENV['USER']
+  opts.on( '-u', '--username USERNAME', 'The Username for Rundeck to SSH as') do |username|
+    options[:username] = username
+  end
 
-   option :puppet_server,
-     :short => "-w PUPPET_SERVER",
-     :long => "--web-ui-url PUPPET_SERVER",
-     :description => "The Puppet Server"
+  options[:port] = 8144
+  opts.on( '-p', '--port PORT', 'The port to run puppet-rundeck on') do |port|
+    options[:port] = port
+  end
 
-   option :port,
-     :short => "-p PORT",
-     :long => "--port PORT",
-     :description => "The port to run on, default 8144",
-     :default => 8144
+  opts.separator ""
+  opts.separator "Common options:"
+ 
+  opts.on_tail('-h', '--help', 'Display this screen' ) do
+    puts opts
+    exit
+  end
 end
 
-cli = PuppetRundeckCLI.new
-cli.parse_options
-
-PuppetRundeck.config_file = cli.config[:config_file]
-PuppetRundeck.username = cli.config[:username]
-PuppetRundeck.puppet_server = cli.config[:puppet_server]
-PuppetRundeck.configure
-
-PuppetRundeck.run! :host => "localhost", :port => cli.config[:port] 
-
+begin
+  optparse.parse!
+  PuppetRundeck.config_file = options[:config_file]
+  PuppetRundeck.username = options[:username]
+  PuppetRundeck.configure
+  PuppetRundeck.run! :host => "localhost", :port => options[:port] 
+rescue OptionParser::InvalidArgument, OptionParser::InvalidOption, OptionParser::MissingArgument
+  puts $!.to_s
+  puts optparse
+  exit
+end

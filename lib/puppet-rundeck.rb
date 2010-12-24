@@ -17,6 +17,7 @@
 require 'sinatra/base'
 require 'puppet'
 require 'puppet/rails'
+require 'builder/xchar'
 
 class PuppetRundeck < Sinatra::Base
 
@@ -25,28 +26,36 @@ class PuppetRundeck < Sinatra::Base
   class << self
     attr_accessor :config_file
     attr_accessor :username
-    attr_accessor :puppet_server
 
     def configure
+      Puppet[:config] = PuppetRundeck.config_file
+      Puppet.parse_config
+      Puppet::Rails.connect
     end
+  end
+
+  def xml_escape(input)
+    # don't know if is string, so convert to string first, then to XML escaped text.
+    return input.to_s.to_xs
   end
 
   get '/' do
     response = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd"><project>'
-    Puppet::Rails.connect
-    Puppet::Rails::Host.find_each do |node|
-    # we need to merge in facts
+    Host = Puppet::Rails::Host
+    Host.all.each do |h|
+      puts "Processing #{h.name}"
+      facts = h.get_facts_hash
       response << <<-EOH
-<node name="#{xml_escape(node[:fqdn])}"
+<node name="#{xml_escape(h.name)}"
       type="Node"
-      description="#{xml_escape(node.name)}"
-      osArch="#{xml_escape(node.kernelfact}"
-      osFamily="#{xml_escape(node.kernelfact)}"
-      osName="#{xml_escape(node.operatingsystemfact)}"
-      osVersion="#{xml_escape(node.operatingsystemversionfact)}"
-      tags=#{xml_escape(node.tags)}""
+      description="#{xml_escape(h.name)}"
+      osArch="#{xml_escape(facts["kernel"].first.value)}"
+      osFamily="#{xml_escape(facts["kernel"].first.value)}"
+      osName="#{xml_escape(facts["operatingsystem"].first.value)}"
+      osVersion="#{xml_escape(facts["operatingsystemrelease"].first.value)}"
+      tags="nil"
       username="#{xml_escape(PuppetRundeck.username)}"
-      hostname="#{xml_escape(node.fqdnfact)}"
+      hostname="#{xml_escape(facts["fqdn"].first.value)}"/>
 EOH
     end
     response << "</project>"

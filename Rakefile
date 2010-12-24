@@ -12,6 +12,8 @@ begin
     gem.email = "james@puppetlabs.com"
     gem.homepage = "http://github.com/jamtur01/puppet-rundeck"
     gem.authors = ["James Turnbull"]
+    gem.add_dependency "puppet", ">= 0.24.8"
+    gem.add_dependency "builder", ">= 2.0.0"
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_development_dependency "yard", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
