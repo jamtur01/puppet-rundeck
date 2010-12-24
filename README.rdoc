@@ -1,0 +1,20 @@
+= puppet-rundeck
+
+Integrates Puppet with RunDeck.
+
+It assumes you have Puppet stored configuration running.
+
+Visiting the URL, for example localhost:8144, should return 
+a list of all stored configuration nodes and populate the appropriate 
+facts.
+
+It's not working as yet but when it does you should just install 
+the gem and fire up puppet-rundeck 
+
+== Credits
+
+Original concept heavily stolen from Adam Jacob's chef-rundeck gem 
+ 
+== Copyright
+
+Copyright (c) 2010 James Turnbull. See LICENSE for details.
