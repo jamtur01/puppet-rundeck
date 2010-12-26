@@ -12,8 +12,8 @@ facts for use with RunDeck.
 
 Requires:
 
- - Puppet (with Stored Configuration enabled)
- - Builder (2.0.0 and later)
+- Puppet (with Stored Configuration enabled)
+- Builder (2.0.0 and later)
 
 == Installation
 
@@ -37,7 +37,7 @@ For example:
  
       <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd">
       <project>
-        <h name="pelin.lovedthanlost.net"
+        <node name="pelin.lovedthanlost.net"
         type="Node"
         description="pelin.lovedthanlost.net"
         osArch="Linux"
@@ -46,14 +46,19 @@ For example:
         osVersion="14"
         tags="nil"
         username="root"
-        hostname="pelin.lovedthanlost.net"
+        hostname="pelin.lovedthanlost.net"/>
       </project>
+
+To use with RunDeck specify the target URL as the value of the `project.resources.url` option in the 
+`project.properties` file for your project, for example:
+
+   project.resources.url = http://localhost:8144
 
 You can specify some configuration options:
 
-  * -c or --config to override the default Puppet configuration file (defaults to `/etc/puppet/puppet.conf`)
-  * -u or --username the user for RunDeck to SSH as, defaults to current user
-  * -p or --port the port to start `puppet-rundeck` on, default to 8144
+* -c or --config to override the default Puppet configuration file (defaults to `/etc/puppet/puppet.conf`)
+* -u or --username the user for RunDeck to SSH as, defaults to current user
+* -p or --port the port to start `puppet-rundeck` on, default to 8144
 
 == Credits
 
