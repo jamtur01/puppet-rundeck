@@ -2,17 +2,17 @@
 
 Integrates Puppet with RunDeck.
 
-It assumes you have Puppet stored configuration running.
-
 Visiting the URL, for example localhost:8144, should return 
-a list of all stored configuration nodes and populate the appropriate 
-facts for use with RunDeck.
+a list of all nodes on the Puppet master and populates the 
+appropriate facts for use with RunDeck.
+
+Note: Version 0.0.2 required stored configuration to be enabled. Later versions do not.
 
 == Prerequisites
 
 Requires:
 
-- Puppet (with Stored Configuration enabled)
+- Puppet
 - Builder (2.0.0 and later)
 
 == Installation
@@ -31,7 +31,7 @@ Then browse to appropriate URL, by default `localhost:8144`
 
   $ curl localhost:8144
 
-A list of the current stored hosts and appropriate facts to configure them on RunDeck will be returned in XML.
+A list of the current hosts and appropriate facts to configure them on RunDeck will be returned in XML.
 
 For example:
  

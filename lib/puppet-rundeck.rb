@@ -26,11 +26,11 @@ class PuppetRundeck < Sinatra::Base
   class << self
     attr_accessor :config_file
     attr_accessor :username
+    attr_accessor :source
 
     def configure
       Puppet[:config] = PuppetRundeck.config_file
       Puppet.parse_config
-      Puppet::Rails.connect
     end
   end
 
@@ -41,21 +41,22 @@ class PuppetRundeck < Sinatra::Base
 
   get '/' do
     response = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd"><project>'
-    Host = Puppet::Rails::Host
-    Host.all.each do |h|
-      puts "Processing #{h.name}"
-      facts = h.get_facts_hash
+      Puppet::Node::Facts.terminus_class = :yaml
+      Puppet[:clientyamldir] = "$yamldir"
+      nodes = Puppet::Node::Facts.search("*")
+      nodes.each do |n|
+        puts "Processing #{n.name}"
       response << <<-EOH
-<node name="#{xml_escape(h.name)}"
+<node name="#{xml_escape(n.name)}"
       type="Node"
-      description="#{xml_escape(h.name)}"
-      osArch="#{xml_escape(facts["kernel"].first.value)}"
-      osFamily="#{xml_escape(facts["kernel"].first.value)}"
-      osName="#{xml_escape(facts["operatingsystem"].first.value)}"
-      osVersion="#{xml_escape(facts["operatingsystemrelease"].first.value)}"
+      description="#{xml_escape(n.name)}"
+      osArch="#{xml_escape(n.values["kernel"])}"
+      osFamily="#{xml_escape(n.values["kernel"])}"
+      osName="#{xml_escape(n.values["operatingsystem"])}"
+      osVersion="#{xml_escape(n.values["operatingsystemrelease"])}"
       tags="nil"
       username="#{xml_escape(PuppetRundeck.username)}"
-      hostname="#{xml_escape(facts["fqdn"].first.value)}"/>
+      hostname="#{xml_escape(n.values["fqdn"])}"/>
 EOH
     end
     response << "</project>"
