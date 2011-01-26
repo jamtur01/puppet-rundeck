@@ -16,7 +16,6 @@
 
 require 'sinatra/base'
 require 'puppet'
-require 'puppet/rails'
 require 'builder/xchar'
 
 class PuppetRundeck < Sinatra::Base
