@@ -40,24 +40,27 @@ class PuppetRundeck < Sinatra::Base
 
   get '/' do
     response = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd"><project>'
+	  Puppet::Node.terminus_class = :yaml
       Puppet::Node::Facts.terminus_class = :yaml
       Puppet[:clientyamldir] = "$yamldir"
-      nodes = Puppet::Node::Facts.search("*")
+      nodes = Puppet::Node.search("*")
       nodes.each do |n|
+		facts = Puppet::Node::Facts.find(n.name)
         puts "Processing #{n.name}"
       response << <<-EOH
 <node name="#{xml_escape(n.name)}"
       type="Node"
       description="#{xml_escape(n.name)}"
-      osArch="#{xml_escape(n.values["kernel"])}"
-      osFamily="#{xml_escape(n.values["kernel"])}"
-      osName="#{xml_escape(n.values["operatingsystem"])}"
-      osVersion="#{xml_escape(n.values["operatingsystemrelease"])}"
-      tags="nil"
+      osArch="#{xml_escape(facts.values["kernel"])}"
+      osFamily="#{xml_escape(facts.values["kernel"])}"
+      osName="#{xml_escape(facts.values["operatingsystem"])}"
+      osVersion="#{xml_escape(facts.values["operatingsystemrelease"])}"
+      tags="#{xml_escape(n.classes.join(','))}"
       username="#{xml_escape(PuppetRundeck.username)}"
-      hostname="#{xml_escape(n.values["fqdn"])}"/>
+      hostname="#{xml_escape(facts.values["fqdn"])}"/>
 EOH
-    end
+
+  end
     response << "</project>"
     response
   end
