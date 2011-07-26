@@ -15,8 +15,13 @@
 #
 
 require 'sinatra/base'
-require 'puppet'
 require 'builder/xchar'
+
+begin
+  require 'puppet'
+rescue LoadError
+  puts "You need to have Puppet 0.24.8 or later installed"
+end
 
 class PuppetRundeck < Sinatra::Base
 
