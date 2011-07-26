@@ -43,13 +43,14 @@ class PuppetRundeck < Sinatra::Base
       nodes = Puppet::Node.search("*")
       nodes.each do |n|
         facts = Puppet::Node::Facts.find(n.name)
+        os_family = facts.values["kernel"] =~ /windows/i ? 'windows' : 'unix'
         tags = Puppet::Resource::Catalog.find(n.name).tags
       response << <<-EOH
 <node name="#{xml_escape(n.name)}"
       type="Node"
       description="#{xml_escape(n.name)}"
       osArch="#{xml_escape(facts.values["kernel"])}"
-      osFamily="#{xml_escape(facts.values["kernel"])}"
+      osFamily="#{xml_escape(os_family)}"
       osName="#{xml_escape(facts.values["operatingsystem"])}"
       osVersion="#{xml_escape(facts.values["operatingsystemrelease"])}"
       tags="#{xml_escape(tags.join(','))}"
