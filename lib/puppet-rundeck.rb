@@ -41,15 +41,27 @@ class PuppetRundeck < Sinatra::Base
     return input.to_s.to_xs
   end
 
+  require 'pp'
   get '/' do
     response = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd"><project>'
-      Puppet::Node.terminus_class = :yaml
+      # Fix for 2.6 to 2.7 indirection difference
       Puppet[:clientyamldir] = "$yamldir"
-      nodes = Puppet::Node.search("*")
+      if Puppet::Node.respond_to? :terminus_class
+        Puppet::Node.terminus_class = :yaml
+        nodes = Puppet::Node.search("*")
+      else
+        Puppet::Node.indirection.terminus_class = :yaml
+        nodes = Puppet::Node.indirection.search("*")
+      end
       nodes.each do |n|
-        facts = Puppet::Node::Facts.find(n.name)
+        if Puppet::Node::Facts.respond_to? :find
+          facts = Puppet::Node::Facts.find(n.name)
+          tags = Puppet::Resource::Catalog.find(n.name).tags
+        else
+          facts = Puppet::Node::Facts.indirection.find(n.name)
+          tags = Puppet::Resource::Catalog.indirection.find(n.name).tags
+        end
         os_family = facts.values["kernel"] =~ /windows/i ? 'windows' : 'unix'
-        tags = Puppet::Resource::Catalog.find(n.name).tags
       response << <<-EOH
 <node name="#{xml_escape(n.name)}"
       type="Node"
@@ -58,7 +70,7 @@ class PuppetRundeck < Sinatra::Base
       osFamily="#{xml_escape(os_family)}"
       osName="#{xml_escape(facts.values["operatingsystem"])}"
       osVersion="#{xml_escape(facts.values["operatingsystemrelease"])}"
-      tags="#{xml_escape(tags.join(','))}"
+      tags="#{xml_escape([n.environment, tags.join(',')].join(','))}"
       username="#{xml_escape(PuppetRundeck.username)}"
       hostname="#{xml_escape(facts.values["fqdn"])}"/>
 EOH

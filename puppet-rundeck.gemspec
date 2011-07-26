@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Turnbull"]
-  s.date = %q{2011-01-29}
+  s.date = %q{2011-07-26}
   s.default_executable = %q{puppet-rundeck}
   s.description = %q{Provides a resource endpoint for RunDeck from a Puppet Server}
   s.email = %q{james@puppetlabs.com}
@@ -41,11 +41,13 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0"])
+      s.add_runtime_dependency(%q<puppet>, [">= 0.24.8"])
       s.add_runtime_dependency(%q<builder>, [">= 2.0.0"])
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_development_dependency(%q<yard>, [">= 0"])
     else
       s.add_dependency(%q<sinatra>, [">= 0"])
+      s.add_dependency(%q<puppet>, [">= 0.24.8"])
       s.add_dependency(%q<builder>, [">= 2.0.0"])
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_dependency(%q<yard>, [">= 0"])
