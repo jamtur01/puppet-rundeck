@@ -72,7 +72,7 @@ class PuppetRundeck < Sinatra::Base
       osVersion="#{xml_escape(facts.values["operatingsystemrelease"])}"
       tags="#{xml_escape([n.environment, tags.join(',')].join(','))}"
       username="#{xml_escape(PuppetRundeck.username)}"
-      hostname="#{xml_escape(facts.values["fqdn"])}"/>
+      hostname="#{xml_escape(n.name)}"/>
 EOH
     end
     response << "</project>"
