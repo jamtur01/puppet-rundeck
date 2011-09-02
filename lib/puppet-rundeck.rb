@@ -43,7 +43,8 @@ class PuppetRundeck < Sinatra::Base
 
   require 'pp'
   get '/' do
-    response = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd"><project>'
+    response['Content-Type'] = 'text/xml'
+    response_xml = %Q(<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd">\n<project>\n)
       # Fix for 2.6 to 2.7 indirection difference
       Puppet[:clientyamldir] = "$yamldir"
       if Puppet::Node.respond_to? :terminus_class
@@ -62,7 +63,7 @@ class PuppetRundeck < Sinatra::Base
           tags = Puppet::Resource::Catalog.indirection.find(n.name).tags
         end
         os_family = facts.values["kernel"] =~ /windows/i ? 'windows' : 'unix'
-      response << <<-EOH
+      response_xml << <<-EOH
 <node name="#{xml_escape(n.name)}"
       type="Node"
       description="#{xml_escape(n.name)}"
@@ -75,7 +76,7 @@ class PuppetRundeck < Sinatra::Base
       hostname="#{xml_escape(facts.values["fqdn"])}"/>
 EOH
     end
-    response << "</project>"
-    response
+    response_xml << "</project>"
+    response_xml
   end
 end
