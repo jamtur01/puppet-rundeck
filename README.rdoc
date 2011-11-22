@@ -12,7 +12,7 @@ Note: Version 0.0.2 required stored configuration to be enabled. Later versions 
 
 Requires:
 
-- Puppet
+- Puppet (0.25.5 and later)
 - Builder (2.0.0 and later)
 
 == Installation
@@ -34,7 +34,7 @@ Then browse to appropriate URL, by default `localhost:8144`
 A list of the current hosts and appropriate facts to configure them on RunDeck will be returned in XML.
 
 For example:
- 
+
       <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd">
       <project>
         <node name="pelin.lovedthanlost.net"
@@ -44,7 +44,7 @@ For example:
         osFamily="Linux"
         osName="Fedora"
         osVersion="14"
-        tags="nil"
+        tags="production"
         username="root"
         hostname="pelin.lovedthanlost.net"/>
       </project>
@@ -63,7 +63,7 @@ You can specify some configuration options:
 == Credits
 
 Original concept heavily stolen from Adam Jacob's chef-rundeck gem 
- 
+
 == Copyright
 
-Copyright (c) 2010 James Turnbull. See LICENSE for details.
+Copyright (c) 2011 James Turnbull. See LICENSE for details.

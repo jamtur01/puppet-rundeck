@@ -1,5 +1,5 @@
 #
-# Copyright 2010, James Turnbull
+# Copyright 2011, James Turnbull
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ require 'builder/xchar'
 begin
   require 'puppet'
 rescue LoadError
-  puts "You need to have Puppet 0.24.8 or later installed"
+  puts "You need to have Puppet 0.25.5 or later installed"
 end
 
 class PuppetRundeck < Sinatra::Base
@@ -55,25 +55,19 @@ class PuppetRundeck < Sinatra::Base
         nodes = Puppet::Node.indirection.search("*")
       end
       nodes.each do |n|
-        if Puppet::Node::Facts.respond_to? :find
-          facts = Puppet::Node::Facts.find(n.name)
-          tags = Puppet::Resource::Catalog.find(n.name).tags
-        else
-          facts = Puppet::Node::Facts.indirection.find(n.name)
-          tags = Puppet::Resource::Catalog.indirection.find(n.name).tags
-        end
-        os_family = facts.values["kernel"] =~ /windows/i ? 'windows' : 'unix'
+        facts = n.parameters
+        os_family = facts["kernel"] =~ /windows/i ? 'windows' : 'unix'
       response_xml << <<-EOH
 <node name="#{xml_escape(n.name)}"
       type="Node"
       description="#{xml_escape(n.name)}"
-      osArch="#{xml_escape(facts.values["kernel"])}"
+      osArch="#{xml_escape(facts["kernel"])}"
       osFamily="#{xml_escape(os_family)}"
-      osName="#{xml_escape(facts.values["operatingsystem"])}"
-      osVersion="#{xml_escape(facts.values["operatingsystemrelease"])}"
-      tags="#{xml_escape([n.environment, tags.join(',')].join(','))}"
+      osName="#{xml_escape(facts["operatingsystem"])}"
+      osVersion="#{xml_escape(facts["operatingsystemrelease"])}"
+      tags="#{xml_escape([n.environment])}"
       username="#{xml_escape(PuppetRundeck.username)}"
-      hostname="#{xml_escape(facts.values["fqdn"])}"/>
+      hostname="#{xml_escape(facts["fqdn"])}"/>
 EOH
     end
     response_xml << "</project>"
