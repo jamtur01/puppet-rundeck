@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+# Init script for puppet-dashboard
+#
+# chkconfig: - 85 15
+# description: Init script for puppet-rundeck
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+PUPPET_RUNDECK_PATH=${PUPPET_RUNDECK_PATH:-/usr/bin/puppet-rundeck}
+PUPPET_RUNDECK_USER=${PUPPET_RUNDECK_USER:-rundeck}
+PUPPET_RUNDECK_RUBY=${PUPPET_RUNDECK_RUBY:-/usr/bin/ruby}
+PIDFILE=/var/run/puppet-rundeck.pid
+RETVAL=0
+
+check_status() {
+        pidofproc -p ${PIDFILE} ${PUPPET_RUNDECK_PATH} > /dev/null
+}
+
+start() {
+        echo -n $"Starting Puppet Rundeck: "
+
+        # Don't start it twice.
+        check_status
+        RETVAL=$?
+        if [ $RETVAL = 0 ]; then
+            echo -n "Already running"
+            echo_success
+            echo
+            return 0
+        fi
+
+        # This is a no longer a dirty, dirty hack, we now daemonize the server.
+        # Also: We have access to daemon.
+        daemon --pidfile ${PIDFILE} "${PUPPET_RUNDECK_RUBY} ${PUPPET_RUNDECK_PATH} -u ${PUPPET_RUNDECK_USER} &"
+
+        # Grab the pid. pidof doesn't work well here, so we use pgrep
+        local PID=`pgrep -f "${PUPPET_RUNDECK_RUBY} ${PUPPET_RUNDECK_PATH} -u ${PUPPET_RUNDECK_USER}"`
+        echo $PID > ${PIDFILE}
+
+        sleep 5
+
+        check_status
+        RETVAL=$?
+
+        if [ $RETVAL = 0 ]; then
+            echo_success
+        else
+            echo_failure
+        fi
+
+        echo
+        return $RETVAL
+}
+
+stop() {
+        echo -n $"Stopping Puppet Rundeck: "
+        killproc -p ${PIDFILE} puppet-rundeck
+        RETVAL=$?
+        if [ $RETVAL = 0 ]; then
+            echo_success
+        else
+            echo_failure
+        fi
+
+        echo
+        return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+    start)
+        start
+        exit $?
+        ;;
+    stop)
+        stop
+        exit $?
+        ;;
+    restart)
+        stop && start
+        exit $?
+        ;;
+    status)
+        echo -n 'Puppet Rundeck is '
+        pidofproc -p ${PIDFILE} ${PUPPET_RUNDECK_RUBY} > /dev/null
+        RETVAL=$?
+        if [ $RETVAL = 0 ]; then
+            echo 'running'
+        else
+            echo 'stopped'
+        fi
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+esac
+
+exit $RETVAL
