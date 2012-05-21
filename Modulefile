@@ -1,0 +1,5 @@
+name 'puppet-rundeck'
+version '0.0.7'
+license 'Apache 2.0'
+summary 'Integrates Puppet with Rundeck'
+project_page 'https://github.com/jamtur01/puppet-rundeck'
