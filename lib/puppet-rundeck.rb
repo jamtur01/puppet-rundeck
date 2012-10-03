@@ -47,7 +47,7 @@ class PuppetRundeck < Sinatra::Base
     response['Content-Type'] = 'text/xml'
     response_xml = %Q(<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd">\n<project>\n)
       # Fix for 2.6 to 2.7 indirection difference
-      Puppet[:clientyamldir] = "$yamldir"
+      Puppet[:clientyamldir] = Puppet[:yamldir]
       if Puppet::Node.respond_to? :terminus_class
         Puppet::Node.terminus_class = :yaml
         nodes = Puppet::Node.search("*")
