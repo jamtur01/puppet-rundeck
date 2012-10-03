@@ -29,6 +29,7 @@ class PuppetRundeck < Sinatra::Base
     attr_accessor :config_file
     attr_accessor :username
     attr_accessor :source
+    attr_accessor :ssh_port
 
     def configure
       Puppet[:config] = PuppetRundeck.config_file
@@ -72,7 +73,7 @@ class PuppetRundeck < Sinatra::Base
       osVersion="#{xml_escape(facts["operatingsystemrelease"])}"
       tags="#{xml_escape([n.environment, tags.join(',')].join(','))}"
       username="#{xml_escape(PuppetRundeck.username)}"
-      hostname="#{xml_escape(facts["fqdn"])}"/>
+      hostname="#{xml_escape(facts["fqdn"] + ":" + PuppetRundeck.ssh_port.to_s)}"/>
 EOH
     end
     response_xml << "</project>"

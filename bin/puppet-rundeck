@@ -46,6 +46,11 @@ optparse = OptionParser.new do |opts|
     options[:port] = port
   end
 
+  options[:ssh_port] = 22
+  opts.on( '-P', '--ssh-port PORT', 'The default port used by sshd on your puppet nodes') do |ssh_port|
+    options[:ssh_port] = ssh_port
+  end
+
   opts.separator ""
   opts.separator "Common options:"
  
@@ -59,6 +64,7 @@ begin
   optparse.parse!
   PuppetRundeck.config_file = options[:config_file]
   PuppetRundeck.username = options[:username]
+  PuppetRundeck.ssh_port = options[:ssh_port]
   PuppetRundeck.configure
   PuppetRundeck.run! :host => "localhost", :port => options[:port] 
 rescue OptionParser::InvalidArgument, OptionParser::InvalidOption, OptionParser::MissingArgument
