@@ -42,8 +42,7 @@ class PuppetRundeck < Sinatra::Base
     return input.to_s.to_xs
   end
 
-  require 'pp'
-  get '/' do
+  def respond(required_tag=nil)
     response['Content-Type'] = 'text/xml'
     response_xml = %Q(<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd">\n<project>\n)
       # Fix for 2.6 to 2.7 indirection difference
@@ -60,6 +59,9 @@ class PuppetRundeck < Sinatra::Base
           tags = Puppet::Resource::Catalog.find(n.name).tags
         else
           tags = Puppet::Resource::Catalog.indirection.find(n.name).tags
+        end
+        if ! required_tag.nil?
+          next if ! tags.include? required_tag
         end
         facts = n.parameters
         os_family = facts["kernel"] =~ /windows/i ? 'windows' : 'unix'
@@ -79,4 +81,15 @@ EOH
     response_xml << "</project>"
     response_xml
   end
+
+  require 'pp'
+
+  get '/' do
+    respond
+  end
+
+  get '/tag/:tag' do
+    respond(params[:tag])
+  end
+
 end
