@@ -54,6 +54,11 @@ To use with RunDeck specify the target URL as the value of the `project.resource
 
    project.resources.url = http://localhost:8144
 
+Yo can also specify a required tag to filter the node list, to provide different project URLs based
+on the same puppet server and puppet-rundeck instance:
+
+   project.resources.url = http://localhost:8144/tag/production
+
 You can specify some configuration options:
 
 * -c or --config to override the default Puppet configuration file (defaults to `/etc/puppet/puppet.conf`)
