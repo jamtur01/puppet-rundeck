@@ -19,6 +19,7 @@ require 'builder/xchar'
 
 begin
   require 'puppet'
+  require 'puppet/face'
 rescue LoadError
   puts "You need to have Puppet 0.25.5 or later installed"
 end
@@ -29,7 +30,6 @@ class PuppetRundeck < Sinatra::Base
     attr_accessor :config_file
     attr_accessor :username
     attr_accessor :source
-    attr_accessor :ssh_port
 
     def configure
       Puppet[:config] = PuppetRundeck.config_file
@@ -42,11 +42,12 @@ class PuppetRundeck < Sinatra::Base
     return input.to_s.to_xs
   end
 
-  def respond(required_tag=nil)
+  require 'pp'
+  get '/' do
     response['Content-Type'] = 'text/xml'
     response_xml = %Q(<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd">\n<project>\n)
       # Fix for 2.6 to 2.7 indirection difference
-      Puppet[:clientyamldir] = Puppet[:yamldir]
+      Puppet[:clientyamldir] = "$yamldir" 
       if Puppet::Node.respond_to? :terminus_class
         Puppet::Node.terminus_class = :yaml
         nodes = Puppet::Node.search("*")
@@ -54,16 +55,14 @@ class PuppetRundeck < Sinatra::Base
         Puppet::Node.indirection.terminus_class = :yaml
         nodes = Puppet::Node.indirection.search("*")
       end
+      Puppet::Node.indirection.terminus_class = :plain
       nodes.each do |n|
         if Puppet::Node::Facts.respond_to? :find
           tags = Puppet::Resource::Catalog.find(n.name).tags
         else
-          tags = Puppet::Resource::Catalog.indirection.find(n.name).tags
+          tags = Puppet::Face[:catalog, :current].find(n.name).tags
         end
-        if ! required_tag.nil?
-          next if ! tags.include? required_tag
-        end
-        facts = n.parameters
+        facts = n.values #n.parameters
         os_family = facts["kernel"] =~ /windows/i ? 'windows' : 'unix'
       response_xml << <<-EOH
 <node name="#{xml_escape(n.name)}"
@@ -73,23 +72,12 @@ class PuppetRundeck < Sinatra::Base
       osFamily="#{xml_escape(os_family)}"
       osName="#{xml_escape(facts["operatingsystem"])}"
       osVersion="#{xml_escape(facts["operatingsystemrelease"])}"
-      tags="#{xml_escape([n.environment, tags.join(',')].join(','))}"
+      tags="#{xml_escape(tags.join(','))}"
       username="#{xml_escape(PuppetRundeck.username)}"
-      hostname="#{xml_escape(facts["fqdn"] + ":" + PuppetRundeck.ssh_port.to_s)}"/>
+      hostname="#{xml_escape(facts["fqdn"])}"/>
 EOH
     end
     response_xml << "</project>"
     response_xml
   end
-
-  require 'pp'
-
-  get '/' do
-    respond
-  end
-
-  get '/tag/:tag' do
-    respond(params[:tag])
-  end
-
 end
