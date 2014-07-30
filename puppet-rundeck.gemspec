@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.description = %q{Provides a resource endpoint for RunDeck from a Puppet Server}
   s.email = %q{james@puppetlabs.com}
   s.executables = ["puppet-rundeck"]
+  s.license = %q{Apache-2.0}
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
