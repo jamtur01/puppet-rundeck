@@ -30,6 +30,7 @@ class PuppetRundeck < Sinatra::Base
     attr_accessor :config_file
     attr_accessor :username
     attr_accessor :source
+    attr_accessor :ssh_port
 
     def configure
       Puppet[:config] = PuppetRundeck.config_file
