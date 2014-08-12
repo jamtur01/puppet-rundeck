@@ -2,18 +2,16 @@
 
 Integrates Puppet with RunDeck.
 
-Visiting the URL, for example localhost:8144, should return 
-a list of all nodes on the Puppet master and populates the 
-appropriate facts for use with RunDeck.
+Visiting the URL, for example `localhost:8144`, should return a list of all nodes
+on the Puppet master and populates the appropriate facts for use with RunDeck.
 
-Note: Version 0.0.2 required stored configuration to be enabled. Later versions do not.
+Note: Version 0.0.2 and earlier required stored configuration to be enabled. Later versions do not.
 
 == Prerequisites
 
 Requires:
 
 - Puppet (0.25.5 and later)
-- Builder (2.0.0 and later)
 
 == Installation
 
@@ -49,13 +47,15 @@ For example:
         hostname="pelin.lovedthanlost.net"/>
       </project>
 
-To use with RunDeck specify the target URL as the value of the `project.resources.url` option in the 
-`project.properties` file for your project, for example:
+To use with RunDeck specify the target URL as the value of the
+`project.resources.url` option in the `project.properties` file for your
+project, for example:
 
    project.resources.url = http://localhost:8144
 
-Yo can also specify a required tag to filter the node list, to provide different project URLs based
-on the same puppet server and puppet-rundeck instance:
+Yo can also specify a required tag to filter the node list, to provide
+different project URLs based on the same Puppet server and Puppet-Rundeck
+instance:
 
    project.resources.url = http://localhost:8144/tag/production
 
@@ -67,8 +67,8 @@ You can specify some configuration options:
 
 == Credits
 
-Original concept heavily stolen from Adam Jacob's chef-rundeck gem 
+Original concept heavily stolen from Adam Jacob's chef-rundeck gem.
 
 == Copyright
 
-Copyright (c) 2011 James Turnbull. See LICENSE for details.
+Copyright (c) 2014 James Turnbull. See LICENSE for details.
