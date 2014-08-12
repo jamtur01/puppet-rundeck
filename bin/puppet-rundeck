@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 #
 # Copyright 2010, James Turnbull
-# 
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,11 +30,11 @@ optparse = OptionParser.new do |opts|
 
   opts.separator ''
   opts.separator 'Configuration options:'
- 
-  options[:config_file] = "/etc/puppet/puppet.conf" 
+
+  options[:config_file] = "/etc/puppet/puppet.conf"
   opts.on( '-c', '--config FILE', 'Specify the location of your Puppet configuration file') do |config_file|
     options[:config_file] = config_file
-  end 
+  end
 
   options[:username] = ENV['USER']
   opts.on( '-u', '--username USERNAME', 'The Username for Rundeck to SSH as') do |username|
@@ -58,7 +58,7 @@ optparse = OptionParser.new do |opts|
 
   opts.separator ""
   opts.separator "Common options:"
- 
+
   opts.on_tail('-h', '--help', 'Display this screen' ) do
     puts opts
     exit
@@ -71,7 +71,7 @@ begin
   PuppetRundeck.username = options[:username]
   PuppetRundeck.ssh_port = options[:ssh_port]
   PuppetRundeck.configure
-  PuppetRundeck.run! :bind => options[:bind], :port => options[:port] 
+  PuppetRundeck.run! :bind => options[:bind], :port => options[:port]
 rescue OptionParser::InvalidArgument, OptionParser::InvalidOption, OptionParser::MissingArgument
   puts $!.to_s
   puts optparse
