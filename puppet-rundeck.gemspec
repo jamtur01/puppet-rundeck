@@ -42,18 +42,18 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<sinatra>, [">= 0"])
-      s.add_runtime_dependency(%q<builder>, [">= 2.0.0"])
+      s.add_runtime_dependency(%q<fast_xs>, [">= 0"])
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_development_dependency(%q<yard>, [">= 0"])
     else
       s.add_dependency(%q<sinatra>, [">= 0"])
-      s.add_dependency(%q<builder>, [">= 2.0.0"])
+      s.add_dependency(%q<fast_xs>, [">= 0"])
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
       s.add_dependency(%q<yard>, [">= 0"])
     end
   else
     s.add_dependency(%q<sinatra>, [">= 0"])
-    s.add_dependency(%q<builder>, [">= 2.0.0"])
+    s.add_dependency(%q<fast_xs>, [">= 0"])
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
     s.add_dependency(%q<yard>, [">= 0"])
   end
