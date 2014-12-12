@@ -42,17 +42,17 @@ class PuppetRundeck < Sinatra::Base
     return input.to_s.fast_xs
   end
 
-  def respond(required_tag=nil)
+  def respond(required_tag=nil, name_query="*")
     response['Content-Type'] = 'text/xml'
     response_xml = %Q(<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE project PUBLIC "-//DTO Labs Inc.//DTD Resources Document 1.0//EN" "project.dtd">\n<project>\n)
       # Fix for 2.6 to 2.7 indirection difference
       Puppet[:clientyamldir] = "$yamldir"
       if Puppet::Node.respond_to? :terminus_class
         Puppet::Node.terminus_class = :yaml
-        nodes = Puppet::Node.search("*")
+        nodes = Puppet::Node.search(name_query)
       else
         Puppet::Node.indirection.terminus_class = :yaml
-        nodes = Puppet::Node.indirection.search("*")
+        nodes = Puppet::Node.indirection.search(name_query)
       end
       Puppet::Node.indirection.terminus_class = :plain
       nodes.each do |n|
@@ -89,5 +89,9 @@ EOH
 
   get '/tag/:tag' do
     respond(params[:tag])
+  end
+  
+  get '/name/:query' do
+    respond(nil, params[:query])
   end
 end
